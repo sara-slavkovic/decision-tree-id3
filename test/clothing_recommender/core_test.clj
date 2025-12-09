@@ -83,3 +83,29 @@
       (is (= 2 (count result)))
       (is (not (nil? (first result))))
       (is (not (nil? (second result)))))))
+
+(deftest sort-by-price-test
+  (testing "sort products by ascending price"
+    (let [result (sort-by-price test-products)]
+      (is (= 29.99 (:price (first result))))
+      (is (= 120.00 (:price (last result))))
+      (is (= ["White T-Shirt" "Red Dress" "Blue Jeans" "Blue Jeans" "Black Jacket"]
+             (map :product-name result))))))
+
+(deftest cheapest-by-category-test
+  (testing "find cheapest product in Pants category"
+    (let [result (cheapest-by-category test-products "Pants")]
+      (is (= "Blue Jeans" (:product-name result)))
+      (is (= 79.99 (:price result)))))
+
+  (testing "returns nil for non-existing category"
+    (is (nil? (cheapest-by-category test-products "Shoes")))))
+
+(deftest find-by-name-test
+  (testing "find all products with the given name"
+    (let [result (find-by-name test-products "Blue Jeans")]
+      (is (= 2 (count result)))
+      (is (= #{"Levis" "Nike"} (set (map :brand result))))))
+
+  (testing "returns empty list when name does not exist"
+    (is (empty? (find-by-name test-products "Golden Jacket")))))
