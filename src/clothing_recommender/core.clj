@@ -1,4 +1,6 @@
-(ns clothing-recommender.core)
+(ns clothing-recommender.core
+  (:require [clothing-recommender.product :as product]
+            [clothing-recommender.user :as user]))
 
 ;; clothing recommendation based on temperature
 (defn simple-recommendation
@@ -118,5 +120,12 @@
         (println (cheapest-by-category products "Pants"))
         (println "\nFind by Name:")
         (println (find-by-name products "Red Dress"))
+
+        (println "\nMake product:")
+        (println (product/make-product
+                   1 "Blue Jeans" "Levis" "Pants" 89.99 4.5 "Blue" "M"))
+        (println "\nMake user:")
+        (println (user/make-user
+                   10 "Sara" ["Casual" "Sporty"] {:tops "M" :pants "M" :shoes 39} 120.00))
         )
   )

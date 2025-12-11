@@ -109,3 +109,4 @@
 
   (testing "returns empty list when name does not exist"
     (is (empty? (find-by-name test-products "Golden Jacket")))))
+
