@@ -13,6 +13,7 @@
   [u]
   (and (:user-id u)
        (:name u)
+       (vector? (:style-preferences u))
        (map? (:sizes u))
        (number? (:budget u))
        ))

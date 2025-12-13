@@ -9,17 +9,16 @@
       (is (= (:name user) "Sara"))
       (is (= (:style-preferences user) ["casual" "sporty"]))
       (is (= (:sizes user) {:shirt "M" :pants "L"}))
-      (is (= (:budget user) 200.0))))
+      (is (= (:budget user) 200.0)))))
 
-  (let [invalid-user {:user-id 3
-                      :name    "Anna"
-                      :sizes   ["M" "L"]                    ;;it's not map
-                      :budget  100}]
-    (is (not (valid-user? invalid-user))))
-
-  (let [invalid-user2 {:user-id 4                           ;;there's no name
-                       :sizes   {:shirt "S"}
-                       :budget  50}]
-    (is (not (valid-user? invalid-user2)))))
-
-
+(deftest valid-user-test
+  (testing "Invalid users"
+    (let [invalid-user {:user-id 3
+                        :name    "Anna"
+                        :sizes   ["M" "L"]                  ;;it's not map
+                        :budget  100}
+          invalid-user2 {:user-id 4                         ;;there's no name
+                         :sizes   {:shirt "S"}
+                         :budget  50}]
+      (is (not (valid-user? invalid-user)))
+      (is (not (valid-user? invalid-user2))))))

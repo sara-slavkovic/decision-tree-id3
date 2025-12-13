@@ -1,6 +1,7 @@
 (ns clothing-recommender.core
   (:require [clothing-recommender.product :as product]
-            [clothing-recommender.user :as user]))
+            [clothing-recommender.user :as user]
+            [clothing-recommender.users :as users]))
 
 ;; clothing recommendation based on temperature
 (defn simple-recommendation
@@ -127,5 +128,7 @@
         (println "\nMake user:")
         (println (user/make-user
                    10 "Sara" ["Casual" "Sporty"] {:tops "M" :pants "M" :shoes 39} 120.00))
+        (println "\nUser:" users/sara)
+        (println "\nAll users:" users/all-users)
         )
   )
