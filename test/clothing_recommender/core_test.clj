@@ -1,6 +1,7 @@
 (ns clothing-recommender.core-test
   (:require [clothing-recommender.core :refer :all]
-            [clojure.test :refer :all]))
+            [clojure.test :refer :all]
+            [clothing-recommender.users :as users]))
 
 (deftest simple-recommendation-test
   (testing "simple clothing recommendation based on temperature"
@@ -110,3 +111,33 @@
   (testing "returns empty list when name does not exist"
     (is (empty? (find-by-name test-products "Golden Jacket")))))
 
+(deftest within-budget-test
+  (testing "check if product price is within user's budget")
+  (is (true?
+        (within-budget?
+          users/sara
+          {:price 100})))
+  (is (false?
+        (within-budget?
+          users/sara
+          {:price 150}))))
+
+(deftest eligible-product-test
+  (testing "Sara is eligible for a matching product"
+    (is (true?
+          (eligible-product?
+            users/sara
+            (nth test-products 0)))))   ;; first product - Blue Jeans, size M, price 89.99
+
+  (testing "Sara is NOT eligible when size does not match"
+    (is (false?
+          (eligible-product?
+            users/sara
+            (nth test-products 1)))))   ;; 2nd prod - White T-Shirt, size L
+
+  (testing "Marko is NOT eligible when price exceeds budget"
+    (is (false?
+          (eligible-product?
+            users/marko
+            (nth test-products 2)))))   ;; 3rd prod - Black Jacket, size M, price 120.00
+  )

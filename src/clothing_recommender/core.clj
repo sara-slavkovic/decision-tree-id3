@@ -89,6 +89,22 @@
   [products name]
   (filter #(= (:product-name %) name) products))
 
+;; product is within budget
+(defn within-budget?
+  [user product]
+  (<= (:price product) (:budget user)))
+
+;; if a product fits user's budget, size and rating
+(defn eligible-product?
+  [user product]
+  (let [good-rating?   (>= (:rating product) 4.0)
+        user-size      (get-in user [:sizes :tops])
+        size-match?    (= (:size product) user-size)]
+    (and (within-budget? user product)
+         good-rating?
+         size-match?)))
+
+
 (defn -main
       [& _]
       (let [products [{:product-id 1 :product-name "Blue Jeans" :brand "Levis" 
@@ -130,5 +146,11 @@
                    10 "Sara" ["Casual" "Sporty"] {:tops "M" :pants "M" :shoes 39} 120.00))
         (println "\nUser:" users/sara)
         (println "\nAll users:" users/all-users)
+        (println "\nWithin budget sara 100:")
+        (println (within-budget? users/sara {:price 100}))
+        (println "\nWithin budget sara 150:")
+        (println (within-budget? users/sara {:price 150}))
+        (println "\nEligible products (first product):")
+        (println (eligible-product? users/sara (first products)))
         )
   )
