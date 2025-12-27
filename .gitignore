@@ -1,3 +1,10 @@
 /.cpcache 
-/target 
-/.idea 
+/target
+.nrepl-port
+
+/.idea
+*.iml
+
+*.mv.db
+*.trace.db
+*.lock.db

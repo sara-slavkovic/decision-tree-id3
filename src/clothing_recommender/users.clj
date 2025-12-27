@@ -25,5 +25,13 @@
     {:tops "S" :pants "S" :shoes "37"}
     150.0))
 
+(def mihajlo
+  (user/make-user
+    4
+    "Mihajlo"
+    ["streetwear" "sporty"]
+    {:tops "XL" :pants "XL" :shoes "46"}
+    60.0))
+
 (def all-users
-  [sara marko jelena])
+  [sara marko jelena mihajlo])

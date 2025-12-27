@@ -1,7 +1,9 @@
 (ns clothing-recommender.core
   (:require [clothing-recommender.product :as product]
             [clothing-recommender.user :as user]
-            [clothing-recommender.users :as users]))
+            [clothing-recommender.users :as users]
+            [clothing-recommender.product-loader :as product-loader]
+            [clothing-recommender.product-repository :as repo]))
 
 ;; clothing recommendation based on temperature
 (defn simple-recommendation
@@ -116,7 +118,12 @@
                       {:product-id 4 :product-name "Red Dress" :brand "Zara" 
                        :category "Dresses" :price 59.99 :rating 4.7 :color "Red" :size "S"}
                       {:product-id 5 :product-name "Blue Jeans" :brand "Nike" 
-                       :category "Pants" :price 79.99 :rating 4.3 :color "Blue" :size "L"}]]
+                       :category "Pants" :price 79.99 :rating 4.3 :color "Blue" :size "L"}]
+            products-csv
+            (product-loader/load-products
+                           "C:\\Users\\Korisnik\\Desktop\\mas clojure\\fashion_products.csv")
+            ]
+
         (println "Example 1:" (simple-recommendation 10))
         (println "Example 2:" (filter-warm-clothes
                                 [{:name "Jacket" :type :warm}
@@ -152,5 +159,11 @@
         (println (within-budget? users/sara {:price 150}))
         (println "\nEligible products (first product):")
         (println (eligible-product? users/sara (first products)))
+
+        ;;realtional db
+        (println "\nTop rated products:")
+        (println (take 5 (repo/find-top-rated 4.5)))
+        (println "\nMen's Fashion under 50:")
+        (println (take 5 (repo/find-by-max-price 50)))
         )
   )
