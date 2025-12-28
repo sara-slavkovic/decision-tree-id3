@@ -4,11 +4,22 @@
 
 (deftest make-user-test
   (testing "Creating a user"
-    (let [user (make-user 1 "Sara" ["casual" "sporty"] {:shirt "M" :pants "L"} 200.0)]
+    (let [user (make-user
+                 1
+                 "Sara"
+                 {:categories ["Women's Fashion"]
+                  :brands     ["Zara" "H&M"]
+                  :colors     ["Black"]
+                  :min-rating 4.0}
+                 {:tops "M" :pants "S" :shoes "M"}
+                 200.0)]
       (is (= (:user-id user) 1))
       (is (= (:name user) "Sara"))
-      (is (= (:style-preferences user) ["casual" "sporty"]))
-      (is (= (:sizes user) {:shirt "M" :pants "L"}))
+      (is (= (:preferences user) {:categories ["Women's Fashion"]
+                                  :brands     ["Zara" "H&M"]
+                                  :colors     ["Black"]
+                                  :min-rating 4.0}))
+      (is (= (:sizes user) {:tops "M" :pants "S" :shoes "M"}))
       (is (= (:budget user) 200.0)))))
 
 (deftest valid-user-test

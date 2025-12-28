@@ -1,10 +1,10 @@
 (ns clothing-recommender.user)
 
 (defn make-user
-  [id name style-preferences sizes budget]
+  [id name preferences sizes budget]
   {:user-id           id
    :name              name
-   :style-preferences style-preferences
+   :preferences       preferences
    :sizes             sizes
    :budget            budget
    })
@@ -13,7 +13,7 @@
   [u]
   (and (:user-id u)
        (:name u)
-       (vector? (:style-preferences u))
+       (map? (:preferences u))
        (map? (:sizes u))
        (number? (:budget u))
        ))
