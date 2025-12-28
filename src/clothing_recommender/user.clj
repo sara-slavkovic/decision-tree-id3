@@ -11,8 +11,8 @@
 
 (defn valid-user?
   [u]
-  (and (:user-id u)
-       (:name u)
+  (and (number? (:user-id u))
+       (string? (:name u))
        (map? (:preferences u))
        (map? (:sizes u))
        (number? (:budget u))

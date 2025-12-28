@@ -24,12 +24,31 @@
 
 (deftest valid-user-test
   (testing "Invalid users"
-    (let [invalid-user {:user-id 3
-                        :name    "Anna"
-                        :sizes   ["M" "L"]                  ;;it's not map
-                        :budget  100}
-          invalid-user2 {:user-id 4                         ;;there's no name
-                         :sizes   {:shirt "S"}
-                         :budget  50}]
-      (is (not (valid-user? invalid-user)))
-      (is (not (valid-user? invalid-user2))))))
+
+    (testing "preferences is not a map"
+      (let [invalid-user
+            (make-user
+              2
+              "Anna"
+              ["casual" "sporty"]   ;;  should be map
+              {:tops "M" :pants "L" :shoes "M"}
+              100.0)]
+        (is (false? (valid-user? invalid-user)))))
+
+    (testing "sizes is not a map"
+      (let [invalid-user
+            (make-user
+              3
+              "Ivana"
+              {:categories ["Women's Fashion"]}
+              ["M" "L"]             ;;  should be map
+              100.0)]
+        (is (false? (valid-user? invalid-user)))))
+
+    (testing "missing name"
+      (let [invalid-user
+            {:user-id 4                                     ;;there's no name
+             :preferences {:categories ["Men's Fashion"]}
+             :sizes {:tops "L" :pants "M" :shoes "L"}
+             :budget 50.0}]
+        (is (false? (valid-user? invalid-user)))))))
