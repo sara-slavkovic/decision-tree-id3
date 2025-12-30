@@ -5,7 +5,7 @@
   (user/make-user
     1
     "Sara"
-    {:categories ["Men's Fashion"]
+    {:categories ["Women's Fashion"]
      :brands     ["Adidas" "Nike"]
      :colors     ["Black" "White"]
      :min-rating 4.0}
