@@ -13,7 +13,6 @@
   (case (:product-name product)
     "T-shirt"        :tops
     "Sweater"        :tops
-    "Pants"          :pants
     "Jeans"          :pants
     "Shoes"          :shoes
     "Dress"          :dress
@@ -25,8 +24,8 @@
 
 (defn price-score
   [user product]
-  (let [budget (:budget user)
-        price  (:price product)]
+  (let [budget (:budget-norm user)
+        price  (:price-norm product)]
     (cond
       (<= price budget)           30
       (<= price (* 1.2 budget))   15
@@ -61,11 +60,11 @@
 
 (defn rating-score
   [user product]
-  (let [min-rating (get-in user [:preferences :min-rating] 0)
-        rating     (:rating product)]
+  (let [min-rating (:min-rating-norm user)
+        rating     (:rating-norm product)]
     (cond
-      (>= rating min-rating)         20
-      (>= rating (dec min-rating))   10
+      (>= rating min-rating)          20
+      (>= rating (- min-rating 0.1))  10
       :else                           0)))
 
 (defn category-score
