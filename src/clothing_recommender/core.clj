@@ -197,6 +197,8 @@
         (println (first (td/build-training-data sara-n products-n)))
         (println "\nAttribute analysis:")
         (println (an/analyze-attributes (td/build-training-data sara-n products-n)))
-        ;;rating and price are the strongest attributes for Sara, and color is the weakest 0.39
+        ;;rating and price are the strongest attributes for Sara, and color is the weakest 13/33
+
+
   )
 )
