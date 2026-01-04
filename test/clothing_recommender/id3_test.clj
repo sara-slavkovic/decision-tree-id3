@@ -49,3 +49,50 @@
 
     (is (= :not-recommend
            (get-in tree [:size-match 0])))))
+
+(deftest predict-test
+  (let [tree
+        {:price
+         {:low  :recommend
+          :high :not-recommend}}
+
+        instance-low
+        {:price :low}
+
+        instance-high
+        {:price :high}]
+
+    (is (= :recommend
+           (id3/predict tree instance-low)))
+
+    (is (= :not-recommend
+           (id3/predict tree instance-high)))))
+
+(deftest predict-deeper-tree-test
+  (let [tree
+        {:size-match
+         {1 {:rating
+             {:good :recommend
+              :bad  :not-recommend}}
+          0 :not-recommend}}
+
+        instance-1
+        {:size-match 1
+         :rating :good}
+
+        instance-2
+        {:size-match 1
+         :rating :bad}
+
+        instance-3
+        {:size-match 0
+         :rating :good}]
+
+    (is (= :recommend
+           (id3/predict tree instance-1)))
+
+    (is (= :not-recommend
+           (id3/predict tree instance-2)))
+
+    (is (= :not-recommend
+           (id3/predict tree instance-3)))))

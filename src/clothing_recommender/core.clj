@@ -135,6 +135,7 @@
 
             training (td/build-training-data sara-n products-n)
             attrs [:price :rating :size-match :category :brand :color]
+            tree (id3/build-tree training attrs)
             ]
 
         (println "Example 1:" (simple-recommendation 10))
@@ -203,8 +204,13 @@
         (println (an/analyze-attributes (td/build-training-data sara-n products-n)))
         ;;rating and price are the strongest attributes for Sara, and color is the weakest 13/33
 
-        ;;ML decision tree
-        (println "\nML decision tree for Sara:")
-        (id3/build-tree training attrs)                     ;;tree
+        ;;ML decision tree - structure
+        ;(println "\nML decision tree for Sara:")
+        ;(id3/build-tree training attrs)   ;;tree
+        ;(println tree)
+
+        ;; predict function
+        (println "\nRecommendation of first product from db for Sara:")
+        (println (id3/predict tree (first training)))
   )
 )

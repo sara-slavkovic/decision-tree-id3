@@ -71,3 +71,15 @@
              (map (fn [[value subset]]
                     [value (build-tree subset remaining)])
                   splits))})))
+
+(defn predict
+  "Classifies a single instance using trained ID3 tree."
+  [tree instance]
+  (if (keyword? tree)
+    tree
+    (let [[attr branches] (first tree)
+          value (get instance attr)]
+      (if-let [subtree (get branches value)]
+        (predict subtree instance)
+        ;; if there's no branch -> not recommend
+        :not-recommend))))
