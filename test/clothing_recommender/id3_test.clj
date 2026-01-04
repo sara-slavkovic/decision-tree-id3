@@ -29,4 +29,23 @@
     (is (= :size
            (id3/best-attribute data [:size :color])))))
 
+(deftest build-tree-test
+  (let [dataset
+        [{:price :low  :rating :good :size-match 1 :label :recommend}
+         {:price :low  :rating :bad  :size-match 0 :label :not-recommend}
+         {:price :high :rating :good :size-match 0 :label :not-recommend}
+         {:price :high :rating :good :size-match 1 :label :recommend}]
 
+        attributes [:price :rating :size-match]
+
+        tree (id3/build-tree dataset attributes)]
+
+    ;; root node should be size-match (highest IG)
+    (is (contains? tree :size-match))
+
+    ;; correct leaf predictions
+    (is (= :recommend
+           (get-in tree [:size-match 1])))
+
+    (is (= :not-recommend
+           (get-in tree [:size-match 0])))))

@@ -7,7 +7,8 @@
             [clothing-recommender.recommendation :as rec]
             [clothing-recommender.normalization :as norm]
             [clothing-recommender.training-data :as td]
-            [clothing-recommender.attribute-analysis :as an]))
+            [clothing-recommender.attribute-analysis :as an]
+            [clothing-recommender.id3 :as id3]))
 
 ;; clothing recommendation based on temperature
 (defn simple-recommendation
@@ -131,6 +132,9 @@
             products-n (doall (norm/normalize-products products-r))
 
             sara-n (norm/normalize-user users/sara products-r)
+
+            training (td/build-training-data sara-n products-n)
+            attrs [:price :rating :size-match :category :brand :color]
             ]
 
         (println "Example 1:" (simple-recommendation 10))
@@ -199,6 +203,8 @@
         (println (an/analyze-attributes (td/build-training-data sara-n products-n)))
         ;;rating and price are the strongest attributes for Sara, and color is the weakest 13/33
 
-
+        ;;ML decision tree
+        (println "\nML decision tree for Sara:")
+        (id3/build-tree training attrs)                     ;;tree
   )
 )
