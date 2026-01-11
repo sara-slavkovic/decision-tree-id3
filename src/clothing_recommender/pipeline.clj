@@ -5,7 +5,8 @@
     [clothing-recommender.dataset :as ds]
     [clothing-recommender.discretization :as disc]
     [clothing-recommender.id3 :as id3]
-    [clothing-recommender.metrics :as m]))
+    [clothing-recommender.metrics :as m]
+    [clothing-recommender.model-store :as ms]))
 
 (defn load-products []
   (repo/find-all))
@@ -79,6 +80,7 @@
                   (m/precision cm)
                   (m/recall cm))}))
 
+; generates different dataset everytime, trains it, and evaluates metrics on model - it will be different metrics everytime
 (defn run-all []
   (let [result (run-pipeline)
         model (:model result)
@@ -93,3 +95,36 @@
     ;;result
     (println "Evaluation metrics:" metrics)
     ))
+
+; training from persisted dataset - uses dataset.edn, trains model, and saves it
+; we call this function only once, bc model has to be trained only once, and saved to resources folder
+(defn train-model-from-dataset!
+  "Loads dataset from disk, trains model, saves it."
+  []
+  (let [dataset (ds/load-dataset "resources/dataset.edn")
+        split   (train-test-split dataset 0.8)
+        discretizers (disc/build-discretizers (:train split))
+        train-data (map #(disc/discretize-instance % discretizers)
+                        (:train split))
+        model (train-model train-data)]
+    (ms/save-model model)
+    model))
+
+(defn load-trained-model
+  "Loads previously trained model from disk."
+  []
+  (ms/load-model))
+
+(defn evaluate-trained-model
+  "Evaluates already trained and saved model on test part of persisted dataset."
+  []
+  (let [dataset (ds/load-dataset "resources/dataset.edn")
+        split   (train-test-split dataset 0.8)
+        discretizers (disc/build-discretizers (:train split))
+        test-data (map #(disc/discretize-instance % discretizers)
+                       (:test split))
+        model (load-trained-model)
+        metrics (evaluate-all model test-data)]
+    (println "Evaluation of persisted model:")
+    (println metrics)
+    metrics))

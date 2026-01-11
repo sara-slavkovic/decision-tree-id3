@@ -15,3 +15,6 @@
     (ds/save-dataset dataset dataset-path)
     (println "Dataset saved to" dataset-path)
     (count dataset)))
+
+;(require '[clothing-recommender.dataset-store :as store])
+;(store/generate-and-save-dataset!)
