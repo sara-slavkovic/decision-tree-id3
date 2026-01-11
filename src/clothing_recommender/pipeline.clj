@@ -4,7 +4,8 @@
     [clothing-recommender.user-generator :as ug]
     [clothing-recommender.dataset :as ds]
     [clothing-recommender.discretization :as disc]
-    [clothing-recommender.id3 :as id3]))
+    [clothing-recommender.id3 :as id3]
+    [clothing-recommender.metrics :as m]))
 
 (defn load-products []
   (repo/find-all))
@@ -65,15 +66,30 @@
         correct (count (filter #(= (:true %) (:pred %)) pairs))]
     (/ correct (count test-data))))
 
+(defn evaluate-all
+  [model test-data]
+  (let [true-labels (map :label test-data)
+        predicted   (map #(predict-instance model %) test-data)
+        cm          (m/confusion-matrix true-labels predicted :recommend)]
+    {:confusion cm
+     :accuracy  (m/accuracy cm)
+     :precision (m/precision cm)
+     :recall    (m/recall cm)
+     :f1        (m/f1-score
+                  (m/precision cm)
+                  (m/recall cm))}))
+
 (defn run-all []
   (let [result (run-pipeline)
         model (:model result)
         test (:test result)
         sample (first test)
         prediction (predict-instance model sample)
-        accuracy (evaluate model test)]
+        accuracy (evaluate model test)
+        metrics (evaluate-all model test)]
     (println "Sample instance:" sample)
     (println "Prediction for first sample:" prediction)
     (println "Model accuracy on test set:" accuracy)
     ;;result
+    (println "Evaluation metrics:" metrics)
     ))
