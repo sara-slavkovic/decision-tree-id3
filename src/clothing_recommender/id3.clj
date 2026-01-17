@@ -12,17 +12,17 @@
 
 (defn majority-label
   "Returns the most frequent label in dataset."
-  [dataset]
+  [dataset label-key]
   (->> dataset
-       (map :label)
+       (map label-key)
        frequencies
        (apply max-key val)
        key))
 
 (defn same-label?
   "Checks if all samples have the same label."
-  [dataset]
-  (apply = (map :label dataset)))
+  [dataset label-key]
+  (apply = (map label-key dataset)))
 
 ;;-------------------------------
 ;; ID3
@@ -30,46 +30,46 @@
 
 (defn information-gain
   "Computes IG(S, A)."
-  [dataset attribute]
-  (let [base-entropy (e/entropy dataset)
+  [dataset attribute label-key]
+  (let [base-entropy (e/entropy dataset label-key)
         total (count dataset)
         splits (split-by-attribute dataset attribute)]
     (- base-entropy
        (reduce
          (fn [acc [_ subset]]
            (let [p (/ (count subset) total)]
-             (+ acc (* p (e/entropy subset)))))
+             (+ acc (* p (e/entropy subset label-key)))))
          0.0
          splits))))
 
 ;;root node
 (defn best-attribute
   "Selects attribute with highest information gain (IG)."
-  [dataset attributes]
+  [dataset attributes label-key]
   (apply max-key
-         #(information-gain dataset %)
+         #(information-gain dataset % label-key)
          attributes))
 
 (defn build-tree
   "Builds an ID3 decision tree."
-  [dataset attributes]
+  [dataset attributes label-key]
   (cond
     ;; all same label -> leaf
-    (same-label? dataset)
+    (same-label? dataset label-key)
     (:label (first dataset))
 
     ;; no attributes left -> majority vote
     (empty? attributes)
-    (majority-label dataset)
+    (majority-label dataset label-key)
 
     :else
-    (let [attr (best-attribute dataset attributes)
+    (let [attr (best-attribute dataset attributes label-key)
           remaining (remove #{attr} attributes)
           splits (split-by-attribute dataset attr)]
       {attr
        (into {}
              (map (fn [[value subset]]
-                    [value (build-tree subset remaining)])
+                    [value (build-tree subset remaining label-key)])
                   splits))})))
 
 (defn predict
@@ -81,5 +81,5 @@
           value (get instance attr)]
       (if-let [subtree (get branches value)]
         (predict subtree instance)
-        ;; if there's no branch -> not recommend
-        :not-recommend))))
+        ;; if there's no branch -> nil
+        nil))))

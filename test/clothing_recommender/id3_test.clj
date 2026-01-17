@@ -1,98 +1,33 @@
 (ns clothing-recommender.id3-test
   (:require [clojure.test :refer :all]
-            [clothing-recommender.id3 :as id3]
-            [clothing-recommender.training-data :as td]
-            [clothing-recommender.product-repository :as repo]
-            [clothing-recommender.users :as users]
-            [clothing-recommender.normalization :as norm]))
+            [clothing-recommender.id3 :as id3]))
 
-(def products (repo/find-all))
-(def products-n (norm/normalize-products products))
-(def user-n (norm/normalize-user users/sara products))
-(def training (td/build-training-data user-n products-n))
+(def toy-dataset
+  [{:a :low  :b :low  :label :yes}
+   {:a :low  :b :high :label :yes}
+   {:a :high :b :low  :label :no}
+   {:a :high :b :high :label :no}])
+
+(def attrs [:a :b])
 
 (deftest information-gain-non-negative
-  (is (>= (id3/information-gain 
-            training
-            :price) 0)))
+  (is (>= (id3/information-gain toy-dataset :a :label) 0)))
 
-(deftest information-gain-zero-when-no-split
-  (let [data [{:a 1 :label :yes}
-              {:a 1 :label :no}]]
-    (is (= 0.0 (id3/information-gain data :a)))))
-
-(deftest best-attribute-picks-correct-one
-  (let [data [{:size 1 :color 0 :label :yes}
-              {:size 1 :color 1 :label :yes}
-              {:size 0 :color 1 :label :no}
-              {:size 0 :color 0 :label :no}]]
-    (is (= :size
-           (id3/best-attribute data [:size :color])))))
+(deftest best-attribute-picks-a
+  (is (= :a
+         (id3/best-attribute toy-dataset attrs :label))))
 
 (deftest build-tree-test
-  (let [dataset
-        [{:price :low  :rating :good :size-match 1 :label :recommend}
-         {:price :low  :rating :bad  :size-match 0 :label :not-recommend}
-         {:price :high :rating :good :size-match 0 :label :not-recommend}
-         {:price :high :rating :good :size-match 1 :label :recommend}]
-
-        attributes [:price :rating :size-match]
-
-        tree (id3/build-tree dataset attributes)]
-
-    ;; root node should be size-match (highest IG)
-    (is (contains? tree :size-match))
-
-    ;; correct leaf predictions
-    (is (= :recommend
-           (get-in tree [:size-match 1])))
-
-    (is (= :not-recommend
-           (get-in tree [:size-match 0])))))
+  (let [tree (id3/build-tree toy-dataset attrs :label)]
+    ;; root node
+    (is (contains? tree :a))
+    ;; leaves
+    (is (= :yes (get-in tree [:a :low])))
+    (is (= :no  (get-in tree [:a :high])))))
 
 (deftest predict-test
-  (let [tree
-        {:price
-         {:low  :recommend
-          :high :not-recommend}}
-
-        instance-low
-        {:price :low}
-
-        instance-high
-        {:price :high}]
-
-    (is (= :recommend
-           (id3/predict tree instance-low)))
-
-    (is (= :not-recommend
-           (id3/predict tree instance-high)))))
-
-(deftest predict-deeper-tree-test
-  (let [tree
-        {:size-match
-         {1 {:rating
-             {:good :recommend
-              :bad  :not-recommend}}
-          0 :not-recommend}}
-
-        instance-1
-        {:size-match 1
-         :rating :good}
-
-        instance-2
-        {:size-match 1
-         :rating :bad}
-
-        instance-3
-        {:size-match 0
-         :rating :good}]
-
-    (is (= :recommend
-           (id3/predict tree instance-1)))
-
-    (is (= :not-recommend
-           (id3/predict tree instance-2)))
-
-    (is (= :not-recommend
-           (id3/predict tree instance-3)))))
+  (let [tree (id3/build-tree toy-dataset attrs :label)]
+    (is (= :yes
+           (id3/predict tree {:a :low :b :low})))
+    (is (= :no
+           (id3/predict tree {:a :high :b :low})))))

@@ -5,9 +5,9 @@
 
 (defn entropy
   "Computes entropy of a dataset based on :label."
-  [dataset]
+  [dataset label-key]
   (let [total (count dataset)
-        freqs (frequencies (map :label dataset))]
+        freqs (frequencies (map label-key dataset))]
     (reduce
       (fn [acc [_ count]]
         (let [p (/ count total)]
