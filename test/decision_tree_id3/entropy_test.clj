@@ -18,3 +18,12 @@
 (deftest entropy-trivial-set
   (is (= 0.0 (e/entropy [] :outcome)))
   (is (= 0.0 (e/entropy [{:outcome :yes}] :outcome))))
+
+(deftest entropy-memo-returns-same-value
+  (let [dataset [{:outcome :yes}
+                 {:outcome :yes}
+                 {:outcome :no}]
+        label-key :outcome]
+    (is
+      (= (e/entropy dataset label-key)
+         (e/entropy-memo dataset label-key)))))

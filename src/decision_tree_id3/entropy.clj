@@ -16,3 +16,6 @@
             (- acc (* p (log2 p))))))
       0.0
       freqs)))
+
+(def entropy-memo
+  (memoize entropy))

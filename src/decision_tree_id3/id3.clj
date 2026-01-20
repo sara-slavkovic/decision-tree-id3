@@ -31,14 +31,14 @@
 (defn information-gain
   "Computes IG(S, A)."
   [dataset attribute label-key]
-  (let [base-entropy (e/entropy dataset label-key)
+  (let [base-entropy (e/entropy-memo dataset label-key)
         total (count dataset)
         splits (split-by-attribute dataset attribute)]
     (- base-entropy
        (reduce
          (fn [acc [_ subset]]
            (let [p (/ (count subset) total)]
-             (+ acc (* p (e/entropy subset label-key)))))
+             (+ acc (* p (e/entropy-memo subset label-key)))))
          0.0
          splits))))
 
