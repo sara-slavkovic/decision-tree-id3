@@ -147,5 +147,5 @@
 ;; with-progress-reporting mean execution time: ~30 ms
 ;;
 ;; Larger dataset (5x duplicated training data):
-;; mean execution time: ~136 ms
+;; mean execution time: ~122 ms
 ;; -----------------------------------

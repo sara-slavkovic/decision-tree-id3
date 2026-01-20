@@ -8,7 +8,7 @@
 (defn split-by-attribute
   "Splits dataset by values of an attribute."
   [dataset attribute]
-  (group-by attribute dataset))
+  (group-by attribute (vec dataset)))
 
 (defn majority-label
   "Returns the most frequent label in dataset."
@@ -69,7 +69,7 @@
           splits (split-by-attribute dataset attr)]
       {attr
        (into {}
-             (map (fn [[value subset]]
+             (mapv (fn [[value subset]]
                     [value (build-tree subset remaining label-key)])
                   splits))})))
 
