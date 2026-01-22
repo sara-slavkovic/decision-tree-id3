@@ -5,7 +5,8 @@
     [decision-tree-id3.split :as split]
     [decision-tree-id3.id3 :as id3]
     [decision-tree-id3.metrics :as metrics]
-    [criterium.core :as c]))
+    [criterium.core :as c]
+    [decision-tree-id3.experiment :as exp]))
 
 ;;-----------------------------------
 ;; Load dataset
@@ -149,3 +150,59 @@
 ;; Larger dataset (5x duplicated training data):
 ;; mean execution time: ~122 ms
 ;; -----------------------------------
+
+;;-----------------------------------
+;; Run experiment (clean API)
+;;-----------------------------------
+;; NOTE:
+;; run-id3 is a clean experimental API.
+;; Code above demonstrates step-by-step pipeline and benchmarking.
+
+(def result
+  (exp/run-id3 raw-dataset label-key "Approved"))
+
+(println "\n-----------------------------------")
+(println "FINAL METRICS")
+(println "-----------------------------------")
+(doseq [[k v] (:metrics result)]
+  (println (name k) ":" v "%"))
+
+
+(def raw-dataset-2
+  (loader/load-csv->maps "csv/car_evaluation.csv"))
+
+(def result-2
+  (exp/run-id3 raw-dataset-2 :decision "acc"))
+
+(println "\n===== CAR EVALUATION DATASET =====")
+(doseq [[k v] (:metrics result-2)]
+  (println (name k) ":" v "%"))
+
+
+(def raw-dataset-3
+  (loader/load-csv->maps "csv/play_tennis_dataset.csv"))
+
+(def result-3
+  (exp/run-id3 raw-dataset-3 :play "Yes"))
+
+(println "\n===== PLAY TENNIS DATASET =====")
+(doseq [[k v] (:metrics result-3)]
+  (println (name k) ":" v "%"))
+
+;;-----------------------------------
+;; Benchmark: Car Evaluation dataset
+;;-----------------------------------
+
+(println "\n--- Benchmarking ID3 on Car Evaluation dataset ---")
+
+(def car-processed
+  (:data (pre/discretize-dataset raw-dataset-2 :decision)))
+
+(def car-split
+  (split/train-test-split car-processed 0.8))
+
+(def car-attrs
+  (pre/attributes car-processed :decision))
+
+(c/quick-bench
+  (id3/build-tree (:train car-split) car-attrs :decision))
