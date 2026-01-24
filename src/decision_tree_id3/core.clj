@@ -77,7 +77,7 @@
 (println "\n--- Benchmarking tree building with progress reporting ---")
 (c/with-progress-reporting
   (c/quick-bench
-    (id3/build-tree train-data attributes label-key)))
+    (id3/build-tree train-data (seq attributes) label-key)))
 
 ;; Optional: scalability test
 (def big-train
@@ -86,7 +86,7 @@
 (println "\n--- Benchmarking tree building on larger dataset ---")
 (c/with-progress-reporting
   (c/quick-bench
-    (id3/build-tree big-train attributes label-key)))
+    (id3/build-tree big-train (seq attributes) label-key)))
 
 (println "\nDecision tree built successfully.")
 
@@ -140,33 +140,12 @@
 ;(id3/print-tree decision-tree)
 
 
-;; -----------------------------------
-;; Benchmark results (Criterium)
-;;
-;; Training dataset:
-;; quick-bench mean execution time: ~29 ms
-;; with-progress-reporting mean execution time: ~30 ms
-;;
-;; Larger dataset (5x duplicated training data):
-;; mean execution time: ~122 ms
-;; -----------------------------------
-
 ;;-----------------------------------
 ;; Run experiment (clean API)
 ;;-----------------------------------
 ;; NOTE:
 ;; run-id3 is a clean experimental API.
 ;; Code above demonstrates step-by-step pipeline and benchmarking.
-
-(def result
-  (exp/run-id3 raw-dataset label-key "Approved"))
-
-(println "\n-----------------------------------")
-(println "FINAL METRICS")
-(println "-----------------------------------")
-(doseq [[k v] (:metrics result)]
-  (println (name k) ":" v "%"))
-
 
 (def raw-dataset-2
   (loader/load-csv->maps "csv/car_evaluation.csv"))
@@ -189,20 +168,11 @@
 (doseq [[k v] (:metrics result-3)]
   (println (name k) ":" v "%"))
 
-;;-----------------------------------
-;; Benchmark: Car Evaluation dataset
-;;-----------------------------------
 
-(println "\n--- Benchmarking ID3 on Car Evaluation dataset ---")
+(println "\n===== BENCHMARK (TREE BUILD) - OTHER DATASETS (API) =====")
 
-(def car-processed
-  (:data (pre/discretize-dataset raw-dataset-2 :decision)))
+(println "\n--- Benchmarking tree building with quick-bench (Car Evaluation) ---")
+(exp/bench-id3 raw-dataset-2 :decision)
 
-(def car-split
-  (split/train-test-split car-processed 0.8))
-
-(def car-attrs
-  (pre/attributes car-processed :decision))
-
-(c/quick-bench
-  (id3/build-tree (:train car-split) car-attrs :decision))
+(println "\n--- Benchmarking tree building with quick-bench (Play Tennis) ---")
+(exp/bench-id3 raw-dataset-3 :play)
