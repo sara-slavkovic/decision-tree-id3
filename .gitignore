@@ -4,7 +4,3 @@
 
 /.idea
 *.iml
-
-*.mv.db
-*.trace.db
-*.lock.db
