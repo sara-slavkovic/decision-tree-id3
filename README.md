@@ -131,6 +131,27 @@ This choice affects **only evaluation**, not training.
 
 ---
 
+### Entropy and Information Gain
+
+ID3 selects the splitting attribute using **Information Gain**, which measures the reduction in entropy after splitting the dataset by a given attribute.
+
+**Entropy** measures class impurity in a dataset:
+
+`Entropy(S) = − ∑ pᵢ · log₂(pᵢ)`
+
+where pᵢ is the probability of class i in dataset S.
+
+**Information Gain** for attribute A is defined as:
+
+`IG(S, A) = Entropy(S) − ∑ (|Sᵥ| / |S|) · Entropy(Sᵥ)`
+
+where Sᵥ is the subset of S for which attribute A has value v.
+
+A step-by-step example of entropy and information gain calculation
+(using the Play Tennis dataset) is provided in the **Wiki**.
+
+---
+
 ## How to Run
 
 From the project root:
@@ -209,11 +230,13 @@ Outliers may appear due to JVM warm-up, GC, and OS scheduling. Mean and quantile
 
 ### Optimization Summary
 
-| Optimization                     | 	Effect                   |
-|----------------------------------|---------------------------|
-| Entropy memoization              | 	~2.5× speedup            |
-| Reduced intermediate allocations | 	Lower GC pressure        |
-| Core pipeline refactoring        | 	Removed duplicated logic |
+| Optimization                                      | 	Effect                                               |
+|---------------------------------------------------|-------------------------------------------------------|
+| Entropy memoization `entropy-memo`                | 	~2.5x speedup (from ~86ms to ~31ms)                  |
+| Entropy computed with `reduce-kv`                 | Optimized entropy computation                         |
+| `same-label?` rewritten using `every?`            | Early exit when labels differ (avoids full traversal) |
+| `build-tree` uses `mapv` for branches             | Avoids lazy sequences during tree construction        |
+| `split-by-attribute` materializes dataset (`vec`) | Improves performance of repeated grouping operations  |
 
 These optimizations were applied incrementally during development, and the reported speedup reflects the combined effect observed in Criterium benchmarks.
 
@@ -225,8 +248,6 @@ These optimizations were applied incrementally during development, and the repor
 | Loan Approval  | ~86%     | ~88%      | ~90%   | ~89%     |
 | Car Evaluation | ~92%     | ~85%      | ~75%   | ~80%     |
 | Play Tennis    | ~89%     | ~86%      | ~98%   | ~92%     |
-
-Play tennis dataset is very small, so high variance is expected. This highlights the tendency of ID3 to **overfit without pruning**.
 
 ---
 
@@ -266,4 +287,3 @@ All tests are located in the `test/` directory and follow the same namespace str
 - [Decision Tree in Machine Learning](https://www.geeksforgeeks.org/machine-learning/decision-tree-introduction-example/)
 - [Decision Trees: ID3 Algorithm Explained](https://medium.com/data-science/decision-trees-for-classification-id3-algorithm-explained-89df76e72df1)
 - [ID3, C4.5, CART and Pruning](https://bitmask93.github.io/ml-blog/ID3-C4-5-CART-and-Pruning/)
-
