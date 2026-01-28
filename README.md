@@ -11,15 +11,10 @@ It is designed as an **educational and experimental project**, demonstrating the
 
 The implementation is generic and can be applied to different **categorical datasets**.
 
----
-
-## Project Documentation
-
 A detailed explanation of the project evolution, design decisions, experiments,
 and critical findings is available in the **Wiki** section of this repository.
 
 See: **[Wiki – Decision Tree (ID3) From Scratch in Clojure](https://github.com/sara-slavkovic/decision-tree-id3/wiki)**
-
 
 ---
 
@@ -66,7 +61,7 @@ decision_tree_id3/
 
 ---
 
-## Methodology
+## Project Workflow
 
 1. **Data Loading**
     - CSV datasets are loaded and converted into maps `{:attribute value}`
@@ -116,8 +111,9 @@ decision_tree_id3/
     - `bench-id3` function benchmarks **only tree construction** using Criterium `quick-bench`
     - This API enables easy comparison of model performance across different datasets
 
+---
 
- ### Positive Label Note
+## Positive Class
 
 ID3 itself does not require a positive class.
 However, **precision, recall and F1** are binary metrics and therefore require specifying a **positive label** during evaluation.
@@ -131,15 +127,19 @@ This choice affects **only evaluation**, not training.
 
 ---
 
-### Entropy and Information Gain
+## How ID3 Works
 
 ID3 selects the splitting attribute using **Information Gain**, which measures the reduction in entropy after splitting the dataset by a given attribute.
+
+### Entropy
 
 **Entropy** measures class impurity in a dataset:
 
 `Entropy(S) = − ∑ pᵢ · log₂(pᵢ)`
 
 where pᵢ is the probability of class i in dataset S.
+
+### Information Gain
 
 **Information Gain** for attribute A is defined as:
 
@@ -215,7 +215,7 @@ Example usage:
 
 ---
 
-## Performance Benchmarking
+## Performance Evaluation
 
 The ID3 decision tree construction performance was evaluated using the **Criterium** benchmarking library.
 
@@ -228,7 +228,9 @@ Tree construction time:
 
 Outliers may appear due to JVM warm-up, GC, and OS scheduling. Mean and quantiles are reported.
 
-### Optimization Summary
+---
+
+## Optimization and its Effects
 
 | Optimization                                      | 	Effect                                               |
 |---------------------------------------------------|-------------------------------------------------------|
@@ -241,7 +243,7 @@ Outliers may appear due to JVM warm-up, GC, and OS scheduling. Mean and quantile
 These optimizations were applied incrementally during development, and the reported speedup reflects the combined effect observed in Criterium benchmarks.
 
 
-### Results Summary
+### Evaluation Metrics
 
 | Dataset        | Accuracy | Precision | Recall | F1 score |
 |----------------|----------|-----------|--------|----------|
