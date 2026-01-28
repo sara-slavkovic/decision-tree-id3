@@ -282,6 +282,16 @@ All tests are located in the `test/` directory and follow the same namespace str
 
 ---
 
+## Notes
+
+During the project development, I tracked and wrote down the progress and followed the scientific methodology and references step by step. 
+
+AI was rarely used for individual code issues, but not for the code implementation. 
+
+After the project implementation was completed, AI was used only to help structure and organize the documentation's titles and subtitles in README file and Wiki page.
+
+---
+
 ## References
 - Quinlan, J.R. (1986), _Induction of Decision Trees_
 - [Decision Tree in Machine Learning](https://www.geeksforgeeks.org/machine-learning/decision-tree-introduction-example/)
